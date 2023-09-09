@@ -24,42 +24,23 @@ Private Declare Function GetAnswerOfLife Lib "shared_lib.dll" () As Integer
 '    ByVal Bytes As Long _
 ')
 
-Private Declare Sub EncodeInt32 Lib "shared_lib.dll" ( _
+Private Declare Sub EncodeInt32 Lib "shared_lib.dll" _
+    Alias "EncodeInt32@12" ( _
     ByVal inputPtr As Long, _
     ByVal inputLength As Long, _
     ByVal i As Integer _
 )
 
-Private Function EncodeVL64() As String
+Private Function EncodeVL64(ByVal i As Integer) As String
     Dim encodedVal As String
-        Dim i As Integer
-    Dim inputPtr As Long
-    Dim inputLength As Long
-    
-    i = 1337
     encodedVal = Space(6)
     
-    inputPtr = StrPtr(encodedVal)
-    inputLength = LenB(encodedVal)
-        
-    Call EncodeInt32(inputPtr, inputLength, 1)
-
-    MsgBox (encodedVal)
-    
+    Call EncodeInt32(StrPtr(encodedVal), LenB(encodedVal), i)
+    EncodeVL64 = encodedVal
 End Function
-
-Private Function LeaveCheck(empid As String) As String ' Notice the As String
-    Dim desc As String
-    Dim sSQL As String
-
-    LeaveCheck = empid
-End Function
-
 
 Private Sub Form_Load()
-Call EncodeVL64
-Call EncodeVL64
-    
-
+Call EncodeVL64(1337)
+Call EncodeVL64(-1)
 End Sub
 
