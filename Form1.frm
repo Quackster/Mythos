@@ -17,30 +17,43 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Declare Function GetAnswerOfLife Lib "shared_lib.dll" () As Integer
-
-'Private Declare Sub copystr Lib "shared_lib.dll" ( _
-'    ByVal theString As Long, _
-'    ByVal Bytes As Long _
-')
-
 Private Declare Sub EncodeInt32 Lib "shared_lib.dll" _
-    Alias "EncodeInt32@12" ( _
+    Alias "EncodeInt32@16" ( _
     ByVal inputPtr As Long, _
     ByVal inputLength As Long, _
-    ByVal i As Integer _
+    ByRef outputLength As Integer, _
+    ByVal i As Long _
 )
 
-Private Function EncodeVL64(ByVal i As Integer) As String
+
+Private Function EncodeVL64(ByVal i As Double) As String
     Dim encodedVal As String
-    encodedVal = Space(6)
+    Dim outputLength As Integer
     
-    Call EncodeInt32(StrPtr(encodedVal), LenB(encodedVal), i)
-    EncodeVL64 = encodedVal
+    encodedVal = Space(6)
+    outputLength = 0
+    
+    Call EncodeInt32(StrPtr(encodedVal), LenB(encodedVal), outputLength, i)
+    
+    If (outputLength = 0) Then
+        EncodeVL64 = vbNullString
+    Else
+        EncodeVL64 = Mid(encodedVal, 1, outputLength)
+    End If
 End Function
 
+
 Private Sub Form_Load()
-Call EncodeVL64(1337)
-Call EncodeVL64(-1)
+
+Dim Test1 As String
+Test1 = EncodeVL64(323213)
+
+MsgBox Test1 & "=1337"
+
+Dim Test2 As String
+Test2 = EncodeVL64(12)
+
+MsgBox Test2 & "=12"
+
 End Sub
 

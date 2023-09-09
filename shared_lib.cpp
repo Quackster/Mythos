@@ -1,8 +1,8 @@
 #include "shared_lib.h"
 
-const int GetAnswerOfLife()
-{
-  return 42;
+void strtest(LPSTR test) {
+  std::string s(test);
+  MessageBoxA(NULL, s.c_str(), "C++ DLL Message", MB_OK);
 }
 
 void copystr(LPSTR input, long inputLength, std::string output) {
@@ -23,7 +23,7 @@ void copystr(LPSTR input, long inputLength, std::string output) {
 }
 
 
-void EncodeInt32(LPSTR inputPtr, long inputLength, int i) {
+void EncodeInt32(LPSTR inputPtr, long inputLength, int *outputLength, int i) {
     int numBytes = 0;
     char* wf = (char*)malloc(6);
     int pos = 0;
@@ -46,9 +46,6 @@ void EncodeInt32(LPSTR inputPtr, long inputLength, int i) {
 
     bzData[numBytes] = '\0';
     
-    MessageBox(NULL, bzData, "Message Box Example", MB_ICONINFORMATION | MB_OK);
-    
-  
     // Copy to allocated VB6 string
     std::string allocated(bzData);
     copystr(inputPtr, inputLength, allocated);
@@ -56,4 +53,6 @@ void EncodeInt32(LPSTR inputPtr, long inputLength, int i) {
     // Free memory
     free(wf);
     free(bzData);
+    
+    *outputLength = numBytes;
 }
