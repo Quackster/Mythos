@@ -8,8 +8,6 @@
 
 #define SHARED_LIB __stdcall __declspec(dllexport)
 
-using namespace std;
-
 #ifdef __cplusplus
 
 extern "C"
@@ -17,7 +15,8 @@ extern "C"
 #endif
 
 __declspec (dllexport) const int GetAnswerOfLife();
-__declspec (dllexport) void copystr (LPSTR, int);
+__declspec (dllexport) void copystr (LPSTR, long, std::string);
+__declspec (dllexport) void EncodeInt32(LPSTR, long, int);
 
 #ifdef __cplusplus
 }
