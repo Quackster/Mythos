@@ -1,19 +1,14 @@
 #include "shared_lib.h"
 
-void strtest(LPSTR test) {
-  std::string s(test);
-  MessageBoxA(NULL, s.c_str(), "C++ DLL Message", MB_OK);
-}
-
-void copystr(LPSTR input, long inputLength, std::string output) {
+void copystr(LPSTR destination, long destinationLength, std::string output) {
     int j = 0;
-    for (int i = 0; i <= inputLength; i += 2) {
-        char ch = *(input + i);
+    for (int i = 0; i <= destinationLength; i += 2) {
+        char ch = *(destination + i);
         
         if (ch == '\0' || output[j] == '\0')
           break;
 
-        *(input + i) = output[j];
+        *(destination + i) = output[j];
         
         j++;
         
@@ -23,7 +18,7 @@ void copystr(LPSTR input, long inputLength, std::string output) {
 }
 
 
-void EncodeInt32(LPSTR inputPtr, long inputLength, int *outputLength, int i) {
+void EncodeInt32(LPSTR destination, long destinationLength, int *outputLength, int i) {
     int numBytes = 0;
     char* wf = (char*)malloc(6);
     int pos = 0;
@@ -48,7 +43,7 @@ void EncodeInt32(LPSTR inputPtr, long inputLength, int *outputLength, int i) {
     
     // Copy to allocated VB6 string
     std::string allocated(bzData);
-    copystr(inputPtr, inputLength, allocated);
+    copystr(destination, destinationLength, allocated);
     
     // Free memory
     free(wf);
