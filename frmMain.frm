@@ -1,22 +1,92 @@
 VERSION 5.00
-Object = "{00028C01-0000-0000-0000-000000000046}#1.0#0"; "DBGRID32.OCX"
+Object = "{CDE57A40-8B86-11D0-B3C6-00A0C90AEA82}#1.0#0"; "MSDATGRD.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    Caption         =   "Form1"
-   ClientHeight    =   8415
+   ClientHeight    =   4620
    ClientLeft      =   60
    ClientTop       =   405
-   ClientWidth     =   12390
+   ClientWidth     =   5055
    LinkTopic       =   "Form1"
-   ScaleHeight     =   8415
-   ScaleWidth      =   12390
+   ScaleHeight     =   4620
+   ScaleWidth      =   5055
    StartUpPosition =   3  'Windows Default
-   Begin MSDBGrid.DBGrid DBGrid1 
-      Height          =   8055
+   Begin MSWinsockLib.Winsock sckGame 
+      Index           =   0
+      Left            =   240
+      Top             =   3120
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
+   Begin MSDataGridLib.DataGrid DataGrid1 
+      Height          =   2535
       Left            =   120
-      OleObjectBlob   =   "frmMain.frx":0000
       TabIndex        =   0
       Top             =   120
-      Width           =   12135
+      Width           =   4815
+      _ExtentX        =   8493
+      _ExtentY        =   4471
+      _Version        =   393216
+      AllowUpdate     =   -1  'True
+      Appearance      =   0
+      Enabled         =   -1  'True
+      HeadLines       =   1
+      RowHeight       =   15
+      AllowAddNew     =   -1  'True
+      AllowDelete     =   -1  'True
+      BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ColumnCount     =   2
+      BeginProperty Column00 
+         DataField       =   ""
+         Caption         =   ""
+         BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+            Type            =   0
+            Format          =   ""
+            HaveTrueFalseNull=   0
+            FirstDayOfWeek  =   0
+            FirstWeekOfYear =   0
+            LCID            =   3081
+            SubFormatType   =   0
+         EndProperty
+      EndProperty
+      BeginProperty Column01 
+         DataField       =   ""
+         Caption         =   ""
+         BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
+            Type            =   0
+            Format          =   ""
+            HaveTrueFalseNull=   0
+            FirstDayOfWeek  =   0
+            FirstWeekOfYear =   0
+            LCID            =   3081
+            SubFormatType   =   0
+         EndProperty
+      EndProperty
+      SplitCount      =   1
+      BeginProperty Split0 
+         BeginProperty Column00 
+         EndProperty
+         BeginProperty Column01 
+         EndProperty
+      EndProperty
    End
 End
 Attribute VB_Name = "frmMain"
@@ -26,55 +96,61 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Dim Conn As ADODB.Connection
-Dim Rs As ADODB.Recordset
+Private Sub Form_Load()
+    sckGame(0).LocalPort = 1232 'What port the server will listen on
+    sckGame(0).Listen 'Tells the server to listen on
+    
+    
+    'Dim Connection As clsDatabase
+    'Set Connection = New clsDatabase
+    
+    'Call Connection.Connect
+    'Call Connection.ExecuteScalar("SELECT * FROM users")
+    
+    'Set DataGrid1.DataSource = Connection.ResultSet
+    
+    'MsgBox (EncodeVL64(1337))
+    
+    Dim scriptEngine As VBScriptEngine
+    Set scriptEngine = New VBScriptEngine
 
-Private Declare Sub EncodeInt32 Lib "shared_lib.dll" _
-    Alias "EncodeInt32@16" ( _
-    ByVal inputPtr As Long, _
-    ByVal inputLength As Long, _
-    ByRef outputLength As Integer, _
-    ByVal i As Long _
-)
+'Dim code As String
+'        code = "Private Function TEST()" & vbCrLf & _
+'"    Call frmMain.TEST()" & vbCrLf & _
+'"    TEST = 1" & vbCrLf & _
+'"End Function"
 
-Private Function EncodeVL64(ByVal i As Double) As String
-    Dim encodedVal As String
-    Dim outputLength As Integer
+    scriptEngine.ExecuteScript ("frmMain.TEST")
+    'MsgBox (scriptEngine.ExecuteScript("TEST"))
+
+End Sub
+
+Sub TEST()
+MsgBox ("lol")
+End Sub
+
+Sub CallMyFunctionProgrammatically()
+    Dim result As String
+    Dim parameter As String
     
-    encodedVal = Space(6)
-    outputLength = 0
+    ' Set the parameter value
+    parameter = "John"
     
-    Call EncodeInt32(StrPtr(encodedVal), LenB(encodedVal), outputLength, i)
+    ' Call MyFunction using CallByName
+    result = CallByName(Me, "MyFunction", VbMethod, parameter)
     
-    If (outputLength = 0) Then
-        EncodeVL64 = vbNullString
-    Else
-        EncodeVL64 = Mid(encodedVal, 1, outputLength)
-    End If
+    ' Display the result
+    MsgBox result
+End Sub
+
+Public Function MyFunction(parameter As String) As String
+    ' Your code here
+    MyFunction = "Hello, " & parameter
 End Function
 
-
-Private Sub Form_Load()
-
-    ' Initialize the connection and recordset objects
-    Set Conn = New ADODB.Connection
-    Set Rs = New ADODB.Recordset
-    
-    ' Replace "YourDSN" with the name of your PostgreSQL DSN
-    Conn.ConnectionString = "Provider=MSDASQL;Driver=PostgreSQL ODBC Driver(ANSI);SERVER=localhost;PORT=5432;UID=postgres;Pwd=123;DATABASE=mythos;ByteaAsLongVarBinary=1;BoolsAsChar=0;"
-    
-    Conn.Open
-    
-    ' Set the DataGrid's DataSource to the recordset
-    Set DBGrid1.DataSource = Rs
-
-MsgBox (EncodeVL64(0))
-MsgBox (EncodeVL64(1))
-MsgBox (EncodeVL64(2))
-MsgBox (EncodeVL64(3))
-MsgBox (EncodeVL64(10))
-MsgBox (EncodeVL64(100))
-MsgBox (EncodeVL64(1337))
-
+Private Sub sckGame_ConnectionRequest(Index As Integer, ByVal requestID As Long)
+     Load sock(requestID)
+     sock(requestID).Accept requestID
+     sock(requestID).SendData "BKHello testing" & Chr(1)
 End Sub
 
