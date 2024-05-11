@@ -79,55 +79,49 @@ Private Sub MainServer_DataArrival(Index As Integer, ByVal bytesTotal As Long)
     Dim packetLength As Long
     Dim packetHeader As String
     Dim packetData As String
+           
+    ' Check if there are at least 5 bytes available to read the packet length and the first character of data
+    If MainServer(Index).BytesReceived >= 5 Then
     
-    Do
-        ' Check if there are at least 5 bytes available to read the packet length and the first character of data
-        If MainServer(Index).BytesReceived < 5 Then Exit Do
-        
         ' Read the buffer
         MainServer(Index).GetData incomingMessage
         incomingMessageLength = MainServer(Index).BytesReceived
         
-        ' Harvest packet length
-        packetLength = DecodeB64(Mid(incomingMessage, pointer, 3))
-        pointer = pointer + 3
-                
-        If packetLength <= 0 Or packetLength > 1000 Then
-            ' Invalid packet length
-            Exit Sub
-        End If
-        
-        ' Check if there are enough bytes available to read the entire packet
-        If bytesTotal < packetLength Then Exit Do
-        
-        ' Harvest packet header
-        packetHeader = Mid(incomingMessage, pointer, 2)
-        pointer = pointer + 2
-        
-        ' Harvest packet data
-        packetData = Mid(incomingMessage, pointer, packetLength - 2)
-        pointer = pointer + packetLength - 2
-        
-        ' Create request class
-        Dim requestMessage As New clsRequestMessage
-        requestMessage.Buffer = packetData
-        requestMessage.Header = packetHeader
-        
-        ' Create data handler class
-        Dim dataHandler As New clsDataHandler
-        dataHandler.Index = Index
-        Set dataHandler.Buffer = requestMessage
-        
-        Call dataHandler.Parse
-        
-        ' MsgBox (requestMessage.HeaderId)
-        
-        ' Call CallByName("modDataHandler", "Message_" & CStr(requestMessage.HeaderId), VbMethod, requestMessage, Index)
-        ' Call Message_206(requestMessage, Index)
-        
-        ' Call Parse(requestMessage, Index)
-        
-    Loop While Len(Mid(incomingMessage, pointer)) > 0
+        Do
+            ' Harvest packet length
+            packetLength = DecodeB64(Mid(incomingMessage, pointer, 3))
+            pointer = pointer + 3
+                    
+            If packetLength <= 0 Or packetLength > 1000 Then
+                ' Invalid packet length
+                Exit Sub
+            End If
+            
+            ' Check if there are enough bytes available to read the entire packet
+            If bytesTotal < packetLength Then Exit Do
+            
+            ' Harvest packet header
+            packetHeader = Mid(incomingMessage, pointer, 2)
+            pointer = pointer + 2
+            
+            ' Harvest packet data
+            packetData = Mid(incomingMessage, pointer, packetLength - 2)
+            pointer = pointer + packetLength - 2
+            
+            ' Create request class
+            Dim requestMessage As New clsRequestMessage
+            requestMessage.Buffer = packetData
+            requestMessage.Header = packetHeader
+            
+            ' Create data handler class
+            Dim dataHandler As New clsDataHandler
+            dataHandler.Index = Index
+            Set dataHandler.Buffer = requestMessage
+            
+            ' Handle packets
+            Call dataHandler.Parse
+        Loop While Len(Mid(incomingMessage, pointer)) > 0
+    End If
 End Sub
 
 Private Function FindFreeSocket() As Integer
