@@ -1,0 +1,6 @@
+*.SCC
+*.log
+src/shared_lib/shared_lib.o
+src/shared_lib/libshared_lib.a
+Mythos.exe
+shared_lib.dll

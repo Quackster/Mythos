@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{CDE57A40-8B86-11D0-B3C6-00A0C90AEA82}#1.0#0"; "MSDATGRD.OCX"
 Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    Caption         =   "Form1"
@@ -11,82 +10,14 @@ Begin VB.Form frmMain
    ScaleHeight     =   4620
    ScaleWidth      =   5055
    StartUpPosition =   3  'Windows Default
-   Begin MSWinsockLib.Winsock sckGame 
+   Begin MSWinsockLib.Winsock MainServer 
       Index           =   0
-      Left            =   240
-      Top             =   3120
+      Left            =   120
+      Top             =   120
       _ExtentX        =   741
       _ExtentY        =   741
       _Version        =   393216
-   End
-   Begin MSDataGridLib.DataGrid DataGrid1 
-      Height          =   2535
-      Left            =   120
-      TabIndex        =   0
-      Top             =   120
-      Width           =   4815
-      _ExtentX        =   8493
-      _ExtentY        =   4471
-      _Version        =   393216
-      AllowUpdate     =   -1  'True
-      Appearance      =   0
-      Enabled         =   -1  'True
-      HeadLines       =   1
-      RowHeight       =   15
-      AllowAddNew     =   -1  'True
-      AllowDelete     =   -1  'True
-      BeginProperty HeadFont {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ColumnCount     =   2
-      BeginProperty Column00 
-         DataField       =   ""
-         Caption         =   ""
-         BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-            Type            =   0
-            Format          =   ""
-            HaveTrueFalseNull=   0
-            FirstDayOfWeek  =   0
-            FirstWeekOfYear =   0
-            LCID            =   3081
-            SubFormatType   =   0
-         EndProperty
-      EndProperty
-      BeginProperty Column01 
-         DataField       =   ""
-         Caption         =   ""
-         BeginProperty DataFormat {6D835690-900B-11D0-9484-00A0C91110ED} 
-            Type            =   0
-            Format          =   ""
-            HaveTrueFalseNull=   0
-            FirstDayOfWeek  =   0
-            FirstWeekOfYear =   0
-            LCID            =   3081
-            SubFormatType   =   0
-         EndProperty
-      EndProperty
-      SplitCount      =   1
-      BeginProperty Split0 
-         BeginProperty Column00 
-         EndProperty
-         BeginProperty Column01 
-         EndProperty
-      EndProperty
+      LocalPort       =   12321
    End
 End
 Attribute VB_Name = "frmMain"
@@ -96,61 +27,77 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Const MAX_SOCKETS As Integer = 100
+Private Const SERVER_PORT As Integer = 12321
+
+Private sockets(MAX_SOCKETS) As Integer
+
 Private Sub Form_Load()
-    sckGame(0).LocalPort = 1232 'What port the server will listen on
-    sckGame(0).Listen 'Tells the server to listen on
+    MainServer(0).LocalPort = SERVER_PORT
+    MainServer(0).Listen
     
-    
-    'Dim Connection As clsDatabase
-    'Set Connection = New clsDatabase
-    
-    'Call Connection.Connect
-    'Call Connection.ExecuteScalar("SELECT * FROM users")
-    
-    'Set DataGrid1.DataSource = Connection.ResultSet
-    
+    'Dim totalBytes As Long
     'MsgBox (EncodeVL64(1337))
+    'MsgBox (DecodeVL64("YNE", totalBytes))
+    'MsgBox (CStr(Len(EncodeB64(139))))
+    'MsgBox (DecodeB64("BK"))
     
-    Dim scriptEngine As VBScriptEngine
-    Set scriptEngine = New VBScriptEngine
-
-'Dim code As String
-'        code = "Private Function TEST()" & vbCrLf & _
-'"    Call frmMain.TEST()" & vbCrLf & _
-'"    TEST = 1" & vbCrLf & _
-'"End Function"
-
-    scriptEngine.ExecuteScript ("frmMain.TEST")
-    'MsgBox (scriptEngine.ExecuteScript("TEST"))
-
 End Sub
 
-Sub TEST()
-MsgBox ("lol")
+Private Sub MainServer_ConnectionRequest(Index As Integer, ByVal requestID As Long)
+    Dim freeSocketID As Integer
+    freeSocketID = FindFreeSocket()
+    
+    If freeSocketID >= 0 Then
+        sockets(freeSocketID) = True
+        Load MainServer(freeSocketID)
+        
+        MainServer(freeSocketID).Accept requestID
+        MainServer(freeSocketID).SendData "@@" & Chr(1)
+    Else
+        ' No free socket available, handle error or reject request
+        MainServer(requestID).Close
+        
+    End If
 End Sub
 
-Sub CallMyFunctionProgrammatically()
-    Dim result As String
-    Dim parameter As String
+Private Sub MainServer_DataArrival(Index As Integer, ByVal bytesTotal As Long)
+    Dim incomingMessage As String
+    Dim incomingMessageLength As String
     
-    ' Set the parameter value
-    parameter = "John"
+    Dim packetLength As Integer
+    Dim packetData As String
     
-    ' Call MyFunction using CallByName
-    result = CallByName(Me, "MyFunction", VbMethod, parameter)
-    
-    ' Display the result
-    MsgBox result
+   ' Do
+        ' Check if there are at least 2 bytes available to read the packet length
+        If MainServer(Index).BytesReceived > 2 Then 'Exit Do
+        
+        ' Read the packet
+        MainServer(Index).GetData incomingMessage
+        
+        ' Check if there are enough bytes available to read the full packet
+        'If MainServer(Index).BytesReceived < packetLength Then Exit Do
+        
+        ' Read the packet data
+        'MainServer(Index).Get packetData, packetLength
+        
+        ' Process the packet data (e.g., display in a MsgBox)
+        MsgBox packetData
+        End If
+        
+    'Loop While MainServer(Index).InBufferCount > 0
 End Sub
 
-Public Function MyFunction(parameter As String) As String
-    ' Your code here
-    MyFunction = "Hello, " & parameter
+
+
+Private Function FindFreeSocket() As Integer
+    Dim i As Integer
+    For i = 1 To MAX_SOCKETS
+        If Not sockets(i) Then
+            FindFreeSocket = i
+            Exit Function
+        End If
+    Next i
+    FindFreeSocket = 0 ' No free socket found
 End Function
-
-Private Sub sckGame_ConnectionRequest(Index As Integer, ByVal requestID As Long)
-     Load sock(requestID)
-     sock(requestID).Accept requestID
-     sock(requestID).SendData "BKHello testing" & Chr(1)
-End Sub
 

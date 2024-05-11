@@ -1,6 +1,16 @@
-@echo off
-taskkill -f -im Project1.exe
-C:\TDM-GCC-32\bin\g++.exe -std=c++11 -U__STRICT_ANSI__  -c -DBUILD_MY_DLL shared_lib.cpp
-C:\TDM-GCC-32\bin\g++.exe -L. -loleaut32 -shared -o shared_lib.dll shared_lib.o -Wl,--out-implib,libshared_lib.a,--enable-stdcall-fixup
-dumpbin.exe /exports shared_lib.dll
+@ECHO OFF
+
+CD src/shared_lib
+
+ECHO Buidling shared_lib.dll
+start BUILD_WINDOWS.bat
+
+CD ../../
+
+COPY src\shared_lib\shared_lib.dll . /Y
+
+ECHO Building Visual Basic 6.0 project (Mythos)
+ECHO ... this may require administrator privileges
+
+START VB6 /make Mythos.vbp Mythos.exe
 pause
