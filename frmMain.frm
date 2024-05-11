@@ -40,7 +40,7 @@ Private Sub Form_Load()
     'MsgBox (EncodeVL64(1337))
     'MsgBox (DecodeVL64("YNE", totalBytes))
     'MsgBox (CStr(Len(EncodeB64(139))))
-    'MsgBox (DecodeB64("BK"))
+    MsgBox (DecodeB64("@@B"))
     
 End Sub
 
@@ -63,32 +63,46 @@ End Sub
 
 Private Sub MainServer_DataArrival(Index As Integer, ByVal bytesTotal As Long)
     Dim incomingMessage As String
-    Dim incomingMessageLength As String
+    Dim incomingMessageLength As Long
     
-    Dim packetLength As Integer
+    Dim pointer As Long
+    pointer = 1
+    
+    Dim packetLength As Long
+    Dim packetHeader As String
     Dim packetData As String
     
-   ' Do
-        ' Check if there are at least 2 bytes available to read the packet length
-        If MainServer(Index).BytesReceived > 2 Then 'Exit Do
+    Do
+        ' Check if there are at least 5 bytes available to read the packet length and the first character of data
+        If MainServer(Index).BytesReceived < 5 Then Exit Do
         
-        ' Read the packet
+        ' Read the buffer
         MainServer(Index).GetData incomingMessage
+        incomingMessageLength = MainServer(Index).BytesReceived
         
-        ' Check if there are enough bytes available to read the full packet
-        'If MainServer(Index).BytesReceived < packetLength Then Exit Do
-        
-        ' Read the packet data
-        'MainServer(Index).Get packetData, packetLength
-        
-        ' Process the packet data (e.g., display in a MsgBox)
-        MsgBox packetData
+        ' Harvest packet length
+        packetLength = DecodeB64(Mid(incomingMessage, pointer, 3))
+        pointer = pointer + 3
+                
+        If packetLength <= 0 Or packetLength > 1000 Then
+            ' Invalid packet length
+            Exit Sub
         End If
         
-    'Loop While MainServer(Index).InBufferCount > 0
+        ' Check if there are enough bytes available to read the entire packet
+        If bytesTotal < packetLength Then Exit Do
+        
+        ' Harvest packet header
+        packetHeader = Mid(incomingMessage, pointer, 2)
+        pointer = pointer + 2
+        
+        ' Harvest packet data
+        packetData = Mid(incomingMessage, pointer, packetLength - 2)
+        pointer = pointer + packetLength - 2
+        
+        
+    Loop While Len(Mid(incomingMessage, pointer)) > 0
 End Sub
-
-
 
 Private Function FindFreeSocket() As Integer
     Dim i As Integer
