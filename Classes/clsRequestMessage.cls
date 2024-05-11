@@ -58,8 +58,18 @@ Public Function PopInt() As Long
     Dim totalBytes As Long
     Dim value As String
     
-    value = DecodeV64(Mid(m_Buffer, m_Counter), totalBytes)
+    value = DecodeVL64(Mid(m_Buffer, m_Counter), totalBytes)
     m_Counter = m_Counter + totalBytes
     
     PopInt = value
+End Function
+
+Public Function PopBool() As Boolean
+    Dim value As Long
+    
+    If (Me.PopInt() = 1) Then
+        PopBool = True
+    Else
+        PopBool = False
+    End If
 End Function

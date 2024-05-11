@@ -119,5 +119,15 @@ Public Function Message_7()
 End Function
 
 Public Function Message_150()
-
+    Dim hideFull As Boolean
+    Dim categoryId As Long
+    
+    hideFull = Me.Buffer.PopBool()
+    categoryId = Me.Buffer.PopInt()
+    
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 139
+    responseMessage.WriteValue ("hideFull: " & CStr(hideFull) & vbNewLine)
+    responseMessage.WriteValue ("categoryId: " & CStr(categoryId))
+    Send Index, responseMessage
 End Function
