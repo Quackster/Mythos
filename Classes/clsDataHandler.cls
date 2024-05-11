@@ -31,7 +31,7 @@ Public Property Set Buffer(ByRef value As clsRequestMessage)
 End Property
 
 Public Function Parse()
-    Log ("[INCOMING] -> " & Me.Buffer.Header & " / " & Me.Buffer.HeaderId & " " & Me.Buffer.Buffer)
+    Log ("[INCOMING] -> " & Me.Buffer.HeaderId & " / " & Me.Buffer.Header & " " & Clean(Me.Buffer.Buffer))
         
     Dim methodName As String
     methodName = "Message_" & CStr(Me.Buffer.HeaderId)
@@ -94,6 +94,10 @@ Public Function Message_4()
     
     Dim responseMessage As New clsResponseMessage
     responseMessage.HeaderId = 3
+    Send Index, responseMessage
+    
+    Set responseMessage = New clsResponseMessage
+    responseMessage.HeaderId = DecodeB64("BL")
     Send Index, responseMessage
     
     Set responseMessage = New clsResponseMessage
