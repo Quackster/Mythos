@@ -1,4 +1,4 @@
-Attribute VB_Name = "modVL64Encoding"
+Attribute VB_Name = "modEncodingVL64"
 Option Explicit
 
 Private Declare Sub DllEncodeVL64 Lib "shared_lib.dll" _
