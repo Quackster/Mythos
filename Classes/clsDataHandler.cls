@@ -18,16 +18,16 @@ Public Property Get Index() As Integer
     Index = m_Index
 End Property
 
-Public Property Let Index(ByVal Value As Integer)
-    m_Index = Value
+Public Property Let Index(ByVal value As Integer)
+    m_Index = value
 End Property
 
 Public Property Get Buffer() As clsRequestMessage
     Set Buffer = m_Buffer
 End Property
 
-Public Property Set Buffer(ByRef Value As clsRequestMessage)
-    Set m_Buffer = Value
+Public Property Set Buffer(ByRef value As clsRequestMessage)
+    Set m_Buffer = value
 End Property
 
 Public Function Parse()
@@ -48,23 +48,76 @@ Private Function MethodExists(methodName As String) As Boolean
 End Function
 
 Public Function Message_206()
-    Send Index, "DUH"
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 277
+    responseMessage.WriteInt (0)
+    Send Index, responseMessage
+    
 End Function
 
 Public Function Message_202()
-    Send Index, "DAQBQAdd-MM-yyyy{2}JHKHPAHRAHIISAIPB" & Chr(2) & "QBI"
-    Send Index, "@H[100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,176,177,178,180,185,190,195,200,205,206,207,210,215,220,225,230,235,240,245,250,255,260,265,266,267,270,275,280,281,285,290,295,300,305,500,505,510,515,520,525,530,535,540,545,550,555,565,570,575,580,585,590,595,596,600,605,610,615,620,625,626,627,630,635,640,645,650,655,660,665,667,669,670,675,680,685,690,695,696,700,705,710,715,720,725,730,735,740]"
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 257
+    responseMessage.WriteInt (9)
+    responseMessage.WriteInt (4)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (7)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (6)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (8)
+    responseMessage.WriteString ("")
+    responseMessage.WriteInt (2)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (9)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (3)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (5)
+    responseMessage.WriteString ("dd-MM-yyyy")
+    Send Index, responseMessage
+    
+    Set responseMessage = New clsResponseMessage
+    responseMessage.HeaderId = 8
+    responseMessage.WriteValue ("[100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,176,177,178,180,185,190,195,200,205,206,207,210,215,220,225,230,235,240,245,250,255,260,265,266,267,270,275,280,281,285,290,295,300,305,500,505,510,515,520,525,530,535,540,545,550,555,565,570,575,580,585,590,595,596,600,605,610,615,620,625,626,627,630,635,640,645,650,655,660,665,667,669,670,675,680,685,690,695,696,700,705,710,715,720,725,730,735,740]")
+    Send Index, responseMessage
 End Function
 
 Public Function Message_4()
-    Send Index, "@C"
+    Dim playerUsername As String
+    Dim playerPassword As String
+    
+    playerUsername = Me.Buffer.PopString()
+    playerPassword = Me.Buffer.PopString()
+    
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 3
+    Send Index, responseMessage
+    
+    Set responseMessage = New clsResponseMessage
+    responseMessage.HeaderId = 139
+    responseMessage.WriteValue ("Username: " & playerUsername & vbNewLine)
+    responseMessage.WriteValue ("Password: " & playerPassword)
+    Send Index, responseMessage
 End Function
 
 Public Function Message_7()
-    Send Index, "@E1" & Chr(2) & "alex" & Chr(2) & "5900161001720017300168501" & Chr(2) & "F" & Chr(2) & "i love oldschool :3" & Chr(2) & "H" & Chr(2) & "HH"
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 5
+    responseMessage.WriteString (1)
+    responseMessage.WriteString ("Alex")
+    responseMessage.WriteString ("5900161001720017300168501")
+    responseMessage.WriteString ("F")
+    responseMessage.WriteString ("i love oldschool :3")
+    responseMessage.WriteInt (0) ' Tickets
+    responseMessage.WriteString ("") ' Pool figure
+    responseMessage.WriteInt (0) ' Film
+    responseMessage.WriteBool (False) ' Receive news
+    Send Index, responseMessage
 End Function
 
+Public Function Message_150()
 
-
-
-
+End Function

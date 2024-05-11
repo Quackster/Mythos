@@ -16,13 +16,14 @@ Option Explicit
 Private m_Buffer As String
 Attribute m_Buffer.VB_VarHelpID = -1
 Private m_Header As String
+Private m_Counter As Long
 
 Public Property Get Buffer() As String
     Buffer = m_Buffer
 End Property
 
-Public Property Let Buffer(ByVal Value As String)
-    m_Buffer = Value
+Public Property Let Buffer(ByVal value As String)
+    m_Buffer = value
 End Property
 
 Public Property Get Header() As String
@@ -33,8 +34,32 @@ Public Property Get HeaderId() As Long
     HeaderId = DecodeB64(m_Header)
 End Property
 
-Public Property Let Header(ByVal Value As String)
-    m_Header = Value
+Public Property Let Header(ByVal value As String)
+    m_Header = value
 End Property
 
+Private Sub Class_Initialize()
+    m_Counter = 1
+End Sub
 
+Public Function PopString() As String
+    Dim stringLength As Long
+    Dim stringValue As String
+    
+    stringLength = DecodeB64(Mid(m_Buffer, m_Counter, 2))
+    stringValue = Mid(m_Buffer, m_Counter + 2, stringLength)
+    
+    m_Counter = m_Counter + stringLength + 2
+    
+    PopString = stringValue
+End Function
+
+Public Function PopInt() As Long
+    Dim totalBytes As Long
+    Dim value As String
+    
+    value = DecodeV64(Mid(m_Buffer, m_Counter), totalBytes)
+    m_Counter = m_Counter + totalBytes
+    
+    PopInt = value
+End Function

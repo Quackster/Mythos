@@ -1,8 +1,9 @@
-frmMain = 573, 69, 1813, 944, , 867, 578, 1479, 1134, C
+frmMain = 63, 73, 1317, 948, , 867, 578, 1479, 1134, C
 clsDatabase = 897, 255, 1950, 1151, 
 VBScriptEngine = 399, 99, 1976, 1005, 
-modEncodingB64 = 145, 10, 1738, 788, 
+modEncodingB64 = 1016, 236, 2609, 1014, 
 modEncodingVL64 = 104, 104, 1697, 908, 
 modDataHandler = 547, 406, 2202, 1123, 
-clsRequestMessage = 260, 260, 1915, 977, 
-clsDataHandler = 234, 234, 1889, 951, 
+clsRequestMessage = 1273, 135, 2928, 852, 
+clsDataHandler = 770, 72, 2425, 975, 
+clsResponseMessage = 332, 81, 1987, 798, 

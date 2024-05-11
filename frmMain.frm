@@ -44,9 +44,9 @@ Private Sub Form_Load()
     MainServer(0).LocalPort = SERVER_PORT
     MainServer(0).Listen
     
-    'Dim totalBytes As Long
-    'MsgBox (EncodeVL64(1337))
-    'MsgBox (DecodeVL64("YNE", totalBytes))
+    Dim totalBytes As Long
+    MsgBox (EncodeVL64(1337))
+    MsgBox (DecodeVL64("YNE", totalBytes))
     'MsgBox (CStr(Len(EncodeB64(139))))
     'MsgBox (DecodeB64("@@B"))
     

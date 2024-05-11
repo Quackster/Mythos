@@ -7,11 +7,11 @@ On Error Resume Next
     End With
 End Sub
 
-Public Function Send(Index As Integer, data As String)
-    Log "[OUTGOING] -> " & data
+Public Function Send(Index As Integer, data As clsResponseMessage)
+    Log "[OUTGOING] -> " & data.Build
     With frmMain
         If frmMain.MainServer(Index).State = 7 Then
-            frmMain.MainServer(Index).SendData data & Chr(1)
+            frmMain.MainServer(Index).SendData data.Build
         End If
     End With
 End Function

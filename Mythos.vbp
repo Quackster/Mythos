@@ -14,6 +14,7 @@ Module=modEncodingVL64; Modules\modEncodingVL64.bas
 Module=modDataHandler; Modules\modDataHandler.bas
 Class=clsRequestMessage; Classes\clsRequestMessage.cls
 Class=clsDataHandler; Classes\clsDataHandler.cls
+Class=clsResponseMessage; Classes\clsResponseMessage.cls
 IconForm="frmMain"
 Startup="frmMain"
 HelpFile=""
