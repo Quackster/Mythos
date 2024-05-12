@@ -48,14 +48,37 @@ Private Function MethodExists(methodName As String) As Boolean
 End Function
 
 Public Function Message_206()
+    'Dim responseMessage As New clsResponseMessage
+    'responseMessage.HeaderId = 277
+    'responseMessage.WriteInt (0)
+    'Send Index, responseMessage
+    
     Dim responseMessage As New clsResponseMessage
-    responseMessage.HeaderId = 277
+    responseMessage.HeaderId = 257
+    responseMessage.WriteInt (9)
+    responseMessage.WriteInt (4)
     responseMessage.WriteInt (0)
+    responseMessage.WriteInt (7)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (6)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (8)
+    responseMessage.WriteString ("")
+    responseMessage.WriteInt (2)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (9)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (1)
+    responseMessage.WriteInt (3)
+    responseMessage.WriteInt (0)
+    responseMessage.WriteInt (5)
+    responseMessage.WriteString ("dd-MM-yyyy")
     Send Index, responseMessage
     
 End Function
 
-Public Function Message_202()
+Public Function UNUSED_Message_202()
     Dim responseMessage As New clsResponseMessage
     responseMessage.HeaderId = 257
     responseMessage.WriteInt (9)
@@ -85,25 +108,17 @@ Public Function Message_202()
     Send Index, responseMessage
 End Function
 
-Public Function Message_4()
-    Dim playerUsername As String
-    Dim playerPassword As String
-    
-    playerUsername = Me.Buffer.PopString()
-    playerPassword = Me.Buffer.PopString()
+Public Function Message_415()
+    Dim ssoTicket As String
+    ssoTicket = Me.Buffer.PopString()
     
     Dim responseMessage As New clsResponseMessage
     responseMessage.HeaderId = 3
     Send Index, responseMessage
     
     Set responseMessage = New clsResponseMessage
-    responseMessage.HeaderId = DecodeB64("BL")
-    Send Index, responseMessage
-    
-    Set responseMessage = New clsResponseMessage
     responseMessage.HeaderId = 139
-    responseMessage.WriteValue ("Username: " & playerUsername & vbNewLine)
-    responseMessage.WriteValue ("Password: " & playerPassword)
+    responseMessage.WriteValue ("Hello!")
     Send Index, responseMessage
 End Function
 
@@ -119,6 +134,12 @@ Public Function Message_7()
     responseMessage.WriteString ("") ' Pool figure
     responseMessage.WriteInt (0) ' Film
     responseMessage.WriteBool (False) ' Receive news
+    Send Index, responseMessage
+End Function
+
+Public Function Message_12()
+    Dim responseMessage As New clsResponseMessage
+    responseMessage.HeaderId = 12
     Send Index, responseMessage
 End Function
 
